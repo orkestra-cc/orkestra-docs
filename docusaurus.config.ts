@@ -166,6 +166,22 @@ const config: Config = {
     mermaid: {
       theme: {light: 'neutral', dark: 'dark'},
     },
+    // Algolia DocSearch: free for OSS. Application flow documented in README.
+    // Builds without the env vars set still produce a working site — the
+    // search box just isn't rendered. Once you have the application response
+    // from Algolia, set ALGOLIA_APP_ID + ALGOLIA_SEARCH_API_KEY +
+    // ALGOLIA_INDEX_NAME as repo secrets (build.yml forwards them).
+    ...(process.env.ALGOLIA_APP_ID && process.env.ALGOLIA_SEARCH_API_KEY && process.env.ALGOLIA_INDEX_NAME
+      ? {
+          algolia: {
+            appId: process.env.ALGOLIA_APP_ID,
+            apiKey: process.env.ALGOLIA_SEARCH_API_KEY,
+            indexName: process.env.ALGOLIA_INDEX_NAME,
+            contextualSearch: true,
+            searchPagePath: 'search',
+          },
+        }
+      : {}),
   } satisfies Preset.ThemeConfig,
 };
 

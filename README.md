@@ -56,11 +56,25 @@ The Pages deployment in [`.github/workflows/build.yml`](.github/workflows/build.
 
 Create the Pages project once via the Cloudflare dashboard with project name `orkestra-docs`, then map the `docs.orkestra.cc` custom domain.
 
+## Algolia DocSearch
+
+The site is wired for [Algolia DocSearch](https://docsearch.algolia.com/) (free for OSS). Until you apply, the build is green but the search box doesn't render. To turn it on:
+
+1. **Apply** at https://docsearch.algolia.com/apply/ — submit `https://docs.orkestra.cc` as the URL and `salvatore.balestrino@gmail.com` as the contact. Approval is usually within a few days; the response includes an app ID, a search-only API key, and an index name.
+2. **Set three GitHub repo secrets** at https://github.com/orkestra-cc/orkestra-docs/settings/secrets/actions :
+   - `ALGOLIA_APP_ID`
+   - `ALGOLIA_SEARCH_API_KEY` (the public search-only key, **not** the admin key)
+   - `ALGOLIA_INDEX_NAME`
+3. Trigger the workflow (`gh workflow run "Build & Deploy" -R orkestra-cc/orkestra-docs --ref main`) — the search box appears in the navbar.
+
+The Algolia crawler runs on their schedule (typically nightly) and indexes everything Docusaurus emits at build time.
+
 ## Roadmap
 
-- Wire `docusaurus-plugin-openapi-docs` to render the live OpenAPI spec under `/api`.
-- Apply for Algolia DocSearch once the site is publicly live.
-- Migrate the canonical `docs/Authentication_flow.md` from the monorepo into this site.
+- Wire `docusaurus-plugin-openapi-docs` to render the live OpenAPI spec under `/api`. — ✅ done
+- Migrate the canonical `docs/Authentication_flow.md` from the monorepo into this site. — ✅ done
+- Apply for Algolia DocSearch once the site is publicly live. — ⏳ awaiting application
+- Falcon-style theming pass to align with `frontend-admin`. — ✅ done
 
 ## Related repos
 
