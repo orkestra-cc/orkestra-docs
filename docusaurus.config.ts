@@ -1,6 +1,7 @@
 import {themes as prismThemes} from 'prism-react-renderer';
 import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 
 const GITHUB_ORG = 'orkestra-cc';
 const DOCS_REPO = `${GITHUB_ORG}/orkestra-docs`;
@@ -34,7 +35,7 @@ const config: Config = {
       onBrokenMarkdownLinks: 'warn',
     },
   },
-  themes: ['@docusaurus/theme-mermaid'],
+  themes: ['@docusaurus/theme-mermaid', 'docusaurus-theme-openapi-docs'],
 
   presets: [
     [
@@ -44,6 +45,12 @@ const config: Config = {
           sidebarPath: './sidebars.ts',
           routeBasePath: '/',
           editUrl: `https://github.com/${DOCS_REPO}/edit/main/`,
+          // Required by docusaurus-theme-openapi-docs — @theme/ApiItem is a
+          // wrapper that renders OpenAPI endpoint pages with the API-specific
+          // layout (schemas, params, response tabs) and falls back to the
+          // standard DocItem for non-API pages, so plain MDX continues to
+          // render normally.
+          docItemComponent: '@theme/ApiItem',
         },
         blog: false,
         theme: {
@@ -54,6 +61,28 @@ const config: Config = {
           priority: 0.5,
         },
       } satisfies Preset.Options,
+    ],
+  ],
+
+  plugins: [
+    [
+      'docusaurus-plugin-openapi-docs',
+      {
+        id: 'api',
+        docsPluginId: 'classic',
+        config: {
+          orkestra: {
+            specPath: 'static/openapi/enterprise.json',
+            outputDir: 'docs/api/reference',
+            sidebarOptions: {
+              groupPathsBy: 'tag',
+              categoryLinkSource: 'tag',
+            },
+            hideSendButton: true, // No public demo backend — disable Try-it-out
+            showSchemas: true,
+          } satisfies OpenApiPlugin.Options,
+        },
+      },
     ],
   ],
 

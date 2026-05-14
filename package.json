@@ -15,7 +15,9 @@
     "typecheck": "tsc",
     "sync:modules": "tsx scripts/sync-modules.ts",
     "sync:adrs": "tsx scripts/sync-adrs.ts",
-    "sync": "npm run sync:modules && npm run sync:adrs"
+    "sync:openapi": "tsx scripts/sync-openapi.ts && docusaurus gen-api-docs orkestra",
+    "clean:openapi": "docusaurus clean-api-docs orkestra",
+    "sync": "npm run sync:modules && npm run sync:adrs && npm run sync:openapi"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
@@ -24,6 +26,8 @@
     "@docusaurus/theme-mermaid": "^3.10.1",
     "@mdx-js/react": "^3.0.0",
     "clsx": "^2.0.0",
+    "docusaurus-plugin-openapi-docs": "^5.0.2",
+    "docusaurus-theme-openapi-docs": "^5.0.2",
     "gray-matter": "^4.0.3",
     "js-yaml": "^4.1.1",
     "prism-react-renderer": "^2.3.0",
