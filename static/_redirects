@@ -1,0 +1,2 @@
+# Cloudflare Pages redirects. Keep this in sync with intentional URL changes
+# (Docusaurus already redirects /docs/intro → / because of routeBasePath: '/').

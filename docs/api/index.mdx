@@ -1,0 +1,24 @@
+---
+title: API Reference
+description: The Huma-generated OpenAPI surface for every enabled module.
+sidebar_position: 1
+---
+
+# API Reference
+
+Orkestra is **OpenAPI-first** — every endpoint is defined via Huma v2, which generates a full `openapi.json` at runtime.
+
+## Right now: live spec
+
+Until the `docusaurus-plugin-openapi-docs` integration is wired up, the canonical source is the running instance:
+
+- **Live spec**: `http://localhost:3000/openapi.json`
+- **Interactive docs**: `http://localhost:3000/docs`
+
+## Soon: rendered here
+
+A CI job will boot the `enterprise` SKU, dump `openapi.json`, commit it to this repo, and `docusaurus-plugin-openapi-docs` will render it under this section.
+
+:::note 🚧 Roadmap
+This is plan-level for now. See [`scripts/sync-openapi.ts`](https://github.com/orkestra-cc/orkestra-docs/blob/main/scripts/sync-openapi.ts).
+:::

@@ -1,0 +1,26 @@
+---
+title: Authentication Flow
+sidebar_position: 5
+---
+
+# Authentication Flow
+
+:::note 🚧 Draft
+The canonical write-up lives at [`docs/Authentication_flow.md`](https://github.com/orkestra-cc/orkestra/blob/main/docs/Authentication_flow.md) in the monorepo. We'll migrate / sync it into these docs in a later pass.
+:::
+
+## At a glance
+
+| Concern        | Implementation                                                                 |
+| -------------- | ------------------------------------------------------------------------------ |
+| Email/password | argon2id, server-side rate-limited                                             |
+| OAuth          | 2.1 — Google, Apple, GitHub, Discord                                           |
+| Tokens         | RS256 JWT (access + refresh) signed by the auth module                         |
+| Sessions       | Redis-backed, with idle + absolute timeouts                                    |
+| RBAC           | 6 roles (administrator, … , guest) enforced by `AuthMiddleware` / `JWTValidator` |
+| MFA            | TOTP, WebAuthn (passkeys)                                                      |
+| OIDC (BYO)     | Per-tenant via the `identity` addon                                            |
+
+## In the AI sidecar
+
+The standalone AI service uses `JWTValidator` instead of `AuthMiddleware`. It validates the same RS256-signed JWTs using **only the public key**, so it does not need the auth module or Mongo access. See [AI sidecar split](/architecture/ai-sidecar-split).

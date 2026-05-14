@@ -1,0 +1,49 @@
+name: Nightly content sync
+
+on:
+  schedule:
+    - cron: '17 5 * * *'   # 05:17 UTC daily — off-peak, avoids the top-of-the-hour rush
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    name: Resync addon READMEs + public ADRs
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Run sync
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: npm run sync
+
+      - name: Build (verifies the synced content is renderable)
+        run: npm run build
+
+      - name: Open PR if content drifted
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: 'chore(sync): refresh addon READMEs + public ADRs'
+          title: 'chore(sync): refresh content from source repos'
+          body: |
+            Automated nightly sync from `sources.yaml` sources.
+
+            - Addon module pages → `docs/modules/addons/`
+            - Public ADRs → `docs/adrs/`
+
+            Review the diff to confirm nothing unexpected. Merge to publish.
+          branch: chore/nightly-sync
+          delete-branch: true
+          labels: automated, content-sync

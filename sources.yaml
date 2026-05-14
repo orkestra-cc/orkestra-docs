@@ -1,0 +1,54 @@
+# Sources from which content gets synced into this docs site.
+#
+# Two sync flows consume this file:
+#   - scripts/sync-modules.ts: pulls README.md from each addon → docs/modules/addons/<name>.mdx
+#   - scripts/sync-adrs.ts:    pulls monorepo ADRs that have `public: true` in their frontmatter
+#
+# Each entry uses a git ref ("main" by default). Pin to a tag in CI for reproducible builds.
+
+monorepo:
+  url: https://github.com/orkestra-cc/orkestra
+  ref: main
+  adrs:
+    glob: docs/adr/*.md           # only files with frontmatter `public: true` are synced
+
+addons:
+  - name: billing
+    url: https://github.com/orkestra-cc/orkestra-billing
+    ref: main
+  - name: documents
+    url: https://github.com/orkestra-cc/orkestra-documents
+    ref: main
+  - name: company
+    url: https://github.com/orkestra-cc/orkestra-company
+    ref: main
+  - name: graph
+    url: https://github.com/orkestra-cc/orkestra-graph
+    ref: main
+  - name: aimodels
+    url: https://github.com/orkestra-cc/orkestra-aimodels
+    ref: main
+  - name: rag
+    url: https://github.com/orkestra-cc/orkestra-rag
+    ref: main
+  - name: agents
+    url: https://github.com/orkestra-cc/orkestra-agents
+    ref: main
+  - name: sales
+    url: https://github.com/orkestra-cc/orkestra-sales
+    ref: main
+  - name: subscriptions
+    url: https://github.com/orkestra-cc/orkestra-subscriptions
+    ref: main
+  - name: payments
+    url: https://github.com/orkestra-cc/orkestra-payments
+    ref: main
+  - name: compliance
+    url: https://github.com/orkestra-cc/orkestra-compliance
+    ref: main
+  - name: identity
+    url: https://github.com/orkestra-cc/orkestra-identity
+    ref: main
+  - name: dev
+    url: https://github.com/orkestra-cc/orkestra-dev
+    ref: main
