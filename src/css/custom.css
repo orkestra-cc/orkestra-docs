@@ -1,30 +1,168 @@
 /**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
+ * Orkestra docs theme — drawn from the frontend-admin Falcon palette.
+ *
+ * Falcon source colors (backend/frontend-admin/src/assets/scss/theme/_colors.scss):
+ *   primary  = $blue   #2c7be5
+ *   success  = $green  #00d27a
+ *   info     = $cyan   #27bcfd
+ *   warning  = $yellow #f5803e
+ *   danger   = $red    #e63757
+ *   body-color = $gray-700 #5e6e82
+ *   body-bg    = $gray-200 #edf2f9
+ *
+ * The Infima variable groups below are derived shades (light/lightest/dark/
+ * darker/darkest) computed off the source value. Keep in lock-step with
+ * frontend-admin when the palette evolves.
  */
 
-/* You can override the default Infima variables here. */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;500;600;700&family=Poppins:wght@500;600;700&display=swap');
+
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
-  --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  /* Primary — Falcon blue */
+  --ifm-color-primary: #2c7be5;
+  --ifm-color-primary-dark: #1f6fd8;
+  --ifm-color-primary-darker: #1d68cc;
+  --ifm-color-primary-darkest: #1856a8;
+  --ifm-color-primary-light: #4990ea;
+  --ifm-color-primary-lighter: #5b9aec;
+  --ifm-color-primary-lightest: #88b6f1;
+
+  /* Semantic colors used by admonitions + badges */
+  --ifm-color-success: #00d27a;
+  --ifm-color-info: #27bcfd;
+  --ifm-color-warning: #f5803e;
+  --ifm-color-danger: #e63757;
+
+  /* Typography — Falcon: Open Sans body / Poppins headings */
+  --ifm-font-family-base: 'Open Sans', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ifm-heading-font-family: 'Poppins', -apple-system, BlinkMacSystemFont,
+    'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ifm-font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas,
+    'Liberation Mono', 'Courier New', monospace;
+  --ifm-heading-font-weight: 600;
+
+  /* Surfaces — light tier */
+  --ifm-background-color: #ffffff;
+  --ifm-background-surface-color: #f9fafd; /* gray-100 */
+  --ifm-color-content: #344050;            /* gray-900 */
+  --ifm-color-content-secondary: #5e6e82;  /* gray-700 */
+
+  /* Borders + dividers */
+  --ifm-color-emphasis-200: #edf2f9;       /* gray-200 */
+  --ifm-color-emphasis-300: #d8e2ef;       /* gray-300 */
+
+  /* Misc */
+  --ifm-code-font-size: 92%;
+  --ifm-code-background: #f9fafd;
+  --ifm-navbar-shadow: 0 2px 8px rgba(44, 123, 229, 0.06);
+  --docusaurus-highlighted-code-line-bg: rgba(44, 123, 229, 0.08);
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
 [data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+  /* Primary — tinted up for readability on dark surfaces, mirroring Falcon's tint-color(60%) pattern */
+  --ifm-color-primary: #5b9aec;
+  --ifm-color-primary-dark: #4087e8;
+  --ifm-color-primary-darker: #2f7be5;
+  --ifm-color-primary-darkest: #1f6fd8;
+  --ifm-color-primary-light: #76acf0;
+  --ifm-color-primary-lighter: #86b7f2;
+  --ifm-color-primary-lightest: #afceF7;
+
+  /* Falcon's variables-dark.scss runs every theme color through tint-color */
+  --ifm-color-success: #4fe1a3;
+  --ifm-color-info: #66cdfd;
+  --ifm-color-warning: #f9a673;
+  --ifm-color-danger: #ec6f88;
+
+  /* Surfaces — dark tier */
+  --ifm-background-color: #0b1727;     /* close to Falcon's dark $body-bg */
+  --ifm-background-surface-color: #121e2e;
+  --ifm-color-content: #f9fafd;
+  --ifm-color-content-secondary: #9da9bb;
+
+  --ifm-color-emphasis-200: #1e2c44;
+  --ifm-color-emphasis-300: #233651;
+
+  --ifm-code-background: #121e2e;
+  --ifm-navbar-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  --docusaurus-highlighted-code-line-bg: rgba(91, 154, 236, 0.15);
+}
+
+/* Anchored headings get a hair more breathing room and the heading family */
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+  font-family: var(--ifm-heading-font-family);
+  letter-spacing: -0.01em;
+}
+
+/* Stronger contrast on the navbar logo + title */
+.navbar__title {
+  font-family: var(--ifm-heading-font-family);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* === OpenAPI plugin: method badges ============================================
+ * The plugin generates sidebar links with class="api-method <verb>" and inside
+ * pages renders pill-shaped badges with class="openapi__method-badge--<verb>".
+ * Style them to match the Falcon palette so endpoint pages feel native.
+ * ============================================================================ */
+
+.api-method > .menu__link::before {
+  content: '';
+  display: inline-block;
+  width: 50px;
+  margin-right: 8px;
+  padding: 2px 0;
+  border-radius: 4px;
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  font-family: var(--ifm-font-family-monospace);
+}
+
+.get > .menu__link::before    { content: 'get';     background-color: var(--ifm-color-info); }
+.post > .menu__link::before   { content: 'post';    background-color: var(--ifm-color-success); }
+.put > .menu__link::before    { content: 'put';     background-color: #b35b00; background-color: var(--ifm-color-warning); }
+.patch > .menu__link::before  { content: 'patch';   background-color: var(--ifm-color-warning); }
+.delete > .menu__link::before { content: 'del';     background-color: var(--ifm-color-danger); }
+.head > .menu__link::before   { content: 'head';    background-color: #6b5eae; }
+.options > .menu__link::before{ content: 'opt';     background-color: #6b5eae; }
+
+/* Endpoint page method badge (above the path) */
+.openapi__method-endpoint .openapi__method-endpoint-path {
+  font-family: var(--ifm-font-family-monospace);
+}
+
+/* Slightly tighter sidebar for the long API tree */
+.theme-doc-sidebar-container .menu__list .menu__list .menu__link {
+  font-size: 0.875rem;
+  padding: 0.35rem 0.75rem;
+}
+
+/* Make admonition titles bolder so :::warning blocks pop */
+.theme-admonition .admonitionHeading_node_modules-\@docusaurus-theme-classic-lib-theme-Admonition-Layout-styles-module {
+  font-weight: 700;
+}
+
+/* Soften the page hero (intro) with the brand gradient on light mode */
+.theme-doc-markdown article > .markdown > h1:first-child {
+  background: linear-gradient(90deg, var(--ifm-color-primary), var(--ifm-color-primary-darkest));
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Subtle border on code blocks so they don't float */
+.theme-code-block {
+  border: 1px solid var(--ifm-color-emphasis-200);
 }
