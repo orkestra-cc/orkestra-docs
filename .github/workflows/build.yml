@@ -6,6 +6,12 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+  # External trigger from the monorepo CI when source-of-truth content
+  # changes (e.g. backend/openapi/enterprise.json regenerated, or
+  # docs/site/** touched). Requires a PAT on the monorepo side to dispatch;
+  # see monorepo/.github/workflows/ for the wiring.
+  repository_dispatch:
+    types: [monorepo-docs-changed, monorepo-openapi-changed]
 
 permissions:
   contents: read
@@ -31,10 +37,13 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Sync content (best-effort)
+      - name: Sync content
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run sync || echo "sync failed — falling back to checked-in content"
+        # Hard-fail on sync errors. There is no checked-in fallback content
+        # since the site is monorepo-sourced (see sources.yaml) — a silent
+        # sync failure would deploy with empty sections.
+        run: npm run sync
 
       - name: Build
         env:

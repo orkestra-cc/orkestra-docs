@@ -13,11 +13,12 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
+    "sync:site": "tsx scripts/sync-monorepo-docs.ts",
     "sync:modules": "tsx scripts/sync-modules.ts",
     "sync:adrs": "tsx scripts/sync-adrs.ts",
     "sync:openapi": "tsx scripts/sync-openapi.ts && docusaurus gen-api-docs orkestra",
     "clean:openapi": "docusaurus clean-api-docs orkestra",
-    "sync": "npm run sync:modules && npm run sync:adrs && npm run sync:openapi"
+    "sync": "npm run sync:site && npm run sync:modules && npm run sync:adrs && npm run sync:openapi"
   },
   "dependencies": {
     "@docusaurus/core": "3.10.1",
