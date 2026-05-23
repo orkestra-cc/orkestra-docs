@@ -3,7 +3,14 @@ import {join} from 'node:path';
 import yaml from 'js-yaml';
 
 export type AddonSource = {name: string; url: string; ref?: string};
-export type MonorepoSource = {url: string; ref?: string; adrs?: {glob: string}};
+export type SiteMirror = {src: string; dst: string};
+export type SiteFile = {src: string; dst: string};
+export type MonorepoSource = {
+  url: string;
+  ref?: string;
+  adrs?: {glob: string};
+  site?: {mirror?: SiteMirror[]; files?: SiteFile[]};
+};
 export type Sources = {monorepo: MonorepoSource; addons: AddonSource[]};
 
 export function loadSources(repoRoot: string): Sources {

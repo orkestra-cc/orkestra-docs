@@ -17,35 +17,53 @@ End-customer (Tier-2 client) documentation lives elsewhere — those users consu
 
 ```bash
 npm install
+npm run sync       # pull content from monorepo + addon repos + OpenAPI spec
 npm start          # http://localhost:3000 with hot reload
 npm run build      # produces ./build/ — what Cloudflare Pages publishes
 npm run serve      # serve the built site locally
 npm run typecheck
 ```
 
+The `docs/` tree is **not** committed in this repo — every page is synced on demand. Running `npm start` without first running `npm run sync` will render an almost-empty site.
+
+Iterating on the sync logic without pushing to the monorepo:
+
+```bash
+MONOREPO_LOCAL_PATH=/path/to/orkestra-checkout npm run sync:site
+```
+
+reads source files directly from disk instead of going through GitHub's API.
+
 ## Content sync
 
-Three pieces of content are auto-pulled from upstream sources, not hand-edited here.
+**This repo holds no hand-written content of its own.** Every page rendered by the site is mirrored from one of these sources at build time:
 
-| What                  | Source                                          | Script                |
-| --------------------- | ----------------------------------------------- | --------------------- |
-| Addon module pages    | Each addon repo's `README.md` (`sources.yaml`)  | `npm run sync:modules`|
-| Public ADRs           | `orkestra-cc/orkestra` `docs/adr/*.md` with `public: true` frontmatter | `npm run sync:adrs` |
-| OpenAPI reference     | The `enterprise` SKU's `/openapi.json`          | _(roadmap)_           |
+| What                          | Source                                                                  | Script                       |
+| ----------------------------- | ----------------------------------------------------------------------- | ---------------------------- |
+| Tutorials, architecture, etc. | `orkestra-cc/orkestra` `docs/site/**`                                   | `npm run sync:site`          |
+| Addon module pages            | Each addon repo's `README.md` (`sources.yaml`)                          | `npm run sync:modules`       |
+| Public ADRs                   | `orkestra-cc/orkestra` `docs/adr/*.md` with `public: true` frontmatter  | `npm run sync:adrs`          |
+| OpenAPI reference             | `orkestra-cc/orkestra` `backend/openapi/enterprise.json`                | `npm run sync:openapi`       |
 
-Run all syncs:
+Run all four:
 
 ```bash
 npm run sync
 ```
 
-The same scripts run in CI via [`.github/workflows/sync-nightly.yml`](.github/workflows/sync-nightly.yml) on a cron and open a PR if anything drifted.
+They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) (sync errors **fail the build** — there is no checked-in fallback), and on a nightly cron in [`.github/workflows/sync-nightly.yml`](.github/workflows/sync-nightly.yml) which opens a PR if anything drifted in static output (the OpenAPI per-endpoint MDX is committed for caching).
 
 ## Content authoring rules
 
-- **Hand-written content** lives in `docs/` and is the source of truth for tutorials, architecture, operating guides, SDK reference, and contributing guides.
-- **Auto-synced content** (`docs/modules/addons/`, `docs/adrs/`) **must not be edited here** — PR the upstream repo instead.
+- **No file under `docs/` should be edited in this repo.** Every page has a source elsewhere — find it via the page's "Edit this page" link in the navbar (Docusaurus follows the `custom_edit_url` injected at sync time) or look it up in `sources.yaml`.
+- **What lives where:**
+  - Tutorials / architecture / operating / SDK / contributing → [`orkestra-cc/orkestra` `docs/site/`](https://github.com/orkestra-cc/orkestra/tree/main/docs/site)
+  - Per-addon module pages → that addon's `README.md` (one repo per addon)
+  - ADRs → [`orkestra-cc/orkestra` `docs/adr/`](https://github.com/orkestra-cc/orkestra/tree/main/docs/adr) (need `public: true` in frontmatter to appear here)
+  - OpenAPI ref → regenerated from the monorepo's `backend/openapi/enterprise.json` (`make openapi-dump`)
 - **`CLAUDE.md` files are AI-only** — they are never synced into this site. Human-facing content for an addon lives in that addon's `README.md`.
+
+This repo *is* the source of truth for: the Docusaurus config (`docusaurus.config.ts`), the sidebar layout (`sidebars.ts`), theming (`src/css/`), sync scripts (`scripts/`), and CI workflows (`.github/workflows/`).
 
 ## Cloudflare Pages secrets
 
@@ -75,6 +93,8 @@ The Algolia crawler runs on their schedule (typically nightly) and indexes every
 - Migrate the canonical `docs/Authentication_flow.md` from the monorepo into this site. — ✅ done
 - Apply for Algolia DocSearch once the site is publicly live. — ⏳ awaiting application
 - Falcon-style theming pass to align with `frontend-admin`. — ✅ done
+- Move all hand-written content into the monorepo (`docs/site/`) — this repo becomes a pure renderer. — ✅ done
+- Cross-repo `repository_dispatch` from monorepo CI so docs deploys are sub-24h after a content merge. — ⏳ workflow is wired, PAT not yet provisioned
 
 ## Related repos
 
