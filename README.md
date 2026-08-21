@@ -45,6 +45,8 @@ reads source files directly from disk instead of going through GitHub's API.
 | Public ADRs                   | `orkestra-cc/orkestra` `docs/adr/*.md` with `public: true` frontmatter  | `npm run sync:adrs`          |
 | OpenAPI reference             | `orkestra-cc/orkestra` `backend/openapi/enterprise.json`                | `npm run sync:openapi`       |
 
+All four read the git ref from `sources.yaml` (`monorepo.ref`, currently `main`) — so the API reference tracks released endpoints, in step with the prose around it. `SPEC_REF=<ref> npm run sync:openapi` overrides it for piloting a spec that hasn't landed yet.
+
 Run all four:
 
 ```bash
