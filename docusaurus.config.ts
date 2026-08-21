@@ -30,6 +30,12 @@ const config: Config = {
   },
 
   markdown: {
+    // ADRs and addon READMEs are authored as plain Markdown for GitHub, then
+    // synced here. The default 'mdx' would compile them as JSX, where a '<'
+    // before a digit or a bare brace in prose is a build error — see
+    // scripts/sync-adrs.ts. 'detect' parses .md as CommonMark and .mdx as MDX,
+    // so hand-written .mdx pages keep every MDX feature.
+    format: 'detect',
     mermaid: true,
     hooks: {
       onBrokenMarkdownLinks: 'warn',
