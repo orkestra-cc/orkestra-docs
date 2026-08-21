@@ -2,18 +2,49 @@ import type {SidebarsConfig} from '@docusaurus/plugin-content-docs';
 
 // The OpenAPI plugin generates docs/api/reference/sidebar.ts at sync time
 // (`npm run sync:openapi`). The file is gitignored — on a fresh clone it
-// won't exist until sync runs. Try/catch so plain `npm start` after clone
-// renders the rest of the site with just the /api landing.
-let apiReferenceItems: SidebarsConfig['docs'] = [];
-try {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const apiSidebar = require('./docs/api/reference/sidebar');
-  const exported = apiSidebar.default ?? apiSidebar;
-  apiReferenceItems = exported.apisidebar ?? [];
-} catch {
-  // sidebar.ts not generated yet — run `npm run sync:openapi`
-  apiReferenceItems = [];
+// won't exist until sync runs, so a missing file degrades to just the /api
+// landing page locally. In CI it is fatal: the sync step runs first, and a
+// build that silently ships an unnavigable API section is worse than no build.
+function loadApiReferenceItems(): SidebarsConfig['docs'] {
+  let exported: unknown;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const apiSidebar = require('./docs/api/reference/sidebar');
+    exported = apiSidebar.default ?? apiSidebar;
+  } catch {
+    if (process.env.CI) {
+      throw new Error(
+        'sidebars.ts: docs/api/reference/sidebar.ts is missing. ' +
+          'The build must run `npm run sync:openapi` before `docusaurus build`.',
+      );
+    }
+    console.warn(
+      '[sidebars] API reference not generated — run `npm run sync:openapi` to populate it.',
+    );
+    return [];
+  }
+
+  // docusaurus-plugin-openapi-docs v5 emits `export default sidebar.apisidebar`,
+  // so the default export IS the item array. Earlier shapes exported the whole
+  // `{apisidebar: [...]}` object. Accept both — reading `.apisidebar` off an
+  // array yields undefined, which is exactly how this went wrong before.
+  const items = Array.isArray(exported)
+    ? (exported as SidebarsConfig['docs'])
+    : ((exported as {apisidebar?: SidebarsConfig['docs']})?.apisidebar ?? []);
+
+  if (items.length === 0) {
+    // A generated-but-unreadable sidebar shipped 1000+ endpoint pages to
+    // production with nothing linking to them. Never let it pass silently.
+    throw new Error(
+      'sidebars.ts: docs/api/reference/sidebar.ts produced 0 items — the ' +
+        'plugin export shape changed. Fix the unwrapping above.',
+    );
+  }
+
+  return items;
 }
+
+const apiReferenceItems = loadApiReferenceItems();
 
 const sidebars: SidebarsConfig = {
   docs: [
