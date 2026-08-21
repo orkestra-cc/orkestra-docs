@@ -53,7 +53,7 @@ Run all four:
 npm run sync
 ```
 
-They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) — sync errors **fail the build**, since there is no checked-in fallback. That workflow is the only path to production, triggered three ways: a push to `main` here, a `repository_dispatch` from the monorepo when its docs change, and a nightly cron that catches addon-repo edits nothing else watches.
+They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) — sync errors **fail the build**, since there is no checked-in fallback. `sync:openapi` additionally generates `docs/api/reference/sidebar.ts`, which `sidebars.ts` consumes to build the API Reference tree; that file being absent (or unwrapping to zero items) is fatal under `CI`, because the endpoint pages still build and deploy perfectly well with nothing linking to them. That workflow is the only path to production, triggered three ways: a push to `main` here, a `repository_dispatch` from the monorepo when its docs change, and a nightly cron that catches addon-repo edits nothing else watches.
 
 ### Which parser each synced page gets
 
