@@ -8,10 +8,17 @@
 #   - scripts/sync-modules.ts: pulls README.md from each addon repo
 #       → docs/modules/addons/<name>.mdx
 #   - scripts/sync-adrs.ts: pulls monorepo ADRs that have `public: true`
-#       in their frontmatter → docs/adrs/<filename>.mdx
+#       in their frontmatter → docs/adrs/<filename>.md
+#   - scripts/sync-openapi.ts: pulls the canonical OpenAPI spec →
+#       static/openapi/enterprise.json, then generates docs/api/reference/**
 #
 # Each entry uses a git ref ("main" by default). Pin to a tag in CI for
 # reproducible builds.
+#
+# monorepo.ref governs ALL FOUR flows, the OpenAPI spec included. Do not
+# reintroduce a per-script ref default: sync-openapi.ts carried one ('dev')
+# long after the reason for it expired, so the API reference rendered
+# unreleased endpoints while every other page came from main.
 
 monorepo:
   url: https://github.com/orkestra-cc/orkestra
