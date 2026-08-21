@@ -12,6 +12,13 @@ on:
   # see monorepo/.github/workflows/ for the wiring.
   repository_dispatch:
     types: [monorepo-docs-changed, monorepo-openapi-changed]
+  # Nightly backstop. The monorepo dispatch only watches the monorepo; addon
+  # repos in sources.yaml can change without anything telling us. This reruns
+  # the same sync + build + deploy so those edits land within a day. GitHub
+  # disables cron schedules after 60 days without repo activity, so treat this
+  # as a safety net, not a guarantee.
+  schedule:
+    - cron: '17 5 * * *'   # 05:17 UTC — off-peak, avoids the top-of-the-hour rush
 
 permissions:
   contents: read

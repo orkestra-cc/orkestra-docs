@@ -51,7 +51,9 @@ Run all four:
 npm run sync
 ```
 
-They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) (sync errors **fail the build** — there is no checked-in fallback), and on a nightly cron in [`.github/workflows/sync-nightly.yml`](.github/workflows/sync-nightly.yml) which opens a PR if anything drifted in static output (the OpenAPI per-endpoint MDX is committed for caching).
+They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) — sync errors **fail the build**, since there is no checked-in fallback. That workflow is the only path to production, triggered three ways: a push to `main` here, a `repository_dispatch` from the monorepo when its docs change, and a nightly cron that catches addon-repo edits nothing else watches.
+
+Nothing the sync produces is committed: `docs/*` and `static/openapi/` are both gitignored, so a working-tree diff after `npm run sync` is always empty. The nightly used to end in `create-pull-request` for exactly that diff, which meant it could never open a PR and never deployed — 14 green runs that published nothing while the site went stale. It now runs `build.yml` itself.
 
 ## Content authoring rules
 
