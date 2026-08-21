@@ -53,6 +53,26 @@ npm run sync
 
 They run on every build in [`.github/workflows/build.yml`](.github/workflows/build.yml) — sync errors **fail the build**, since there is no checked-in fallback. That workflow is the only path to production, triggered three ways: a push to `main` here, a `repository_dispatch` from the monorepo when its docs change, and a nightly cron that catches addon-repo edits nothing else watches.
 
+### Which parser each synced page gets
+
+`siteConfig.markdown.format` is `'detect'`, so the **extension the sync writes decides the parser**:
+
+| Sync output | Parser | Why |
+| --- | --- | --- |
+| `docs/adrs/*.md`, `docs/modules/addons/*.md` | CommonMark | Authored as plain Markdown for GitHub. They never use JSX, and must not be held to MDX's stricter rules. |
+| Everything mirrored from `docs/site/**` (`.mdx`) | MDX | Hand-written Docusaurus pages; JSX, imports and components are fair game. |
+
+This matters because MDX compiles pages as JSX, where ordinary prose is a build
+error: `(<5 minute)` reads as an opening tag and fails with *"Unexpected
+character `5` before name"*. That took down a whole site build in August 2026 and
+skipped a release's docs deploy. An ADR author has no reason to know their `.md`
+is re-parsed as JSX in another repo, so the fix belongs here, not in a rule
+people must remember. As a bonus, CommonMark renders these pages the way GitHub
+does — the same file now looks the same in both places.
+
+If a synced page ever genuinely needs MDX, change the extension the sync script
+writes for that source; don't change `format` globally.
+
 Nothing the sync produces is committed: `docs/*` and `static/openapi/` are both gitignored, so a working-tree diff after `npm run sync` is always empty. The nightly used to end in `create-pull-request` for exactly that diff, which meant it could never open a PR and never deployed — 14 green runs that published nothing while the site went stale. It now runs `build.yml` itself.
 
 ## Content authoring rules

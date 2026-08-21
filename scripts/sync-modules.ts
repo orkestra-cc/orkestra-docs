@@ -2,7 +2,10 @@
 /**
  * Sync addon module pages from each public addon repo's README.md.
  *
- * Output: docs/modules/addons/<name>.mdx
+ * Output: docs/modules/addons/<name>.md
+ *
+ * Emitted as .md for the same reason as sync-adrs.ts: an addon README is plain
+ * Markdown written for GitHub, so it must not be parsed as JSX.
  *
  * Sources are listed in sources.yaml. Each one is fetched at the pinned ref via
  * raw.githubusercontent.com (no git clone, no auth required for public repos).
@@ -41,7 +44,7 @@ async function main() {
 
     const transformed = transformReadme(body, rawBase, repoBase);
     const mdx = renderPage(addon.name, repoBase, ref, transformed);
-    writeFileSync(join(OUT_DIR, `${addon.name}.mdx`), mdx);
+    writeFileSync(join(OUT_DIR, `${addon.name}.md`), mdx);
     synced++;
   }
   console.log(`\nDone. ${synced} synced, ${skipped} skipped.`);

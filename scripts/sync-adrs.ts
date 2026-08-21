@@ -1,7 +1,12 @@
 #!/usr/bin/env tsx
 /**
  * Sync ADRs from the monorepo. An ADR is included if and only if its frontmatter
- * contains `public: true`. Output: docs/adrs/<filename>.mdx
+ * contains `public: true`. Output: docs/adrs/<filename>.md
+ *
+ * Emitted as .md, not .mdx: ADRs are authored as plain Markdown for GitHub and
+ * never use JSX. With siteConfig.markdown.format = 'detect' that means they are
+ * parsed as CommonMark, so prose like '(<5 minute)' or a bare brace cannot fail
+ * the build the way it does under MDX.
  *
  * Discovery uses the GitHub Contents API (anonymous, rate-limited at 60/h —
  * fine for nightly sync; CI passes GITHUB_TOKEN to lift to 5000/h).
@@ -42,9 +47,11 @@ async function main() {
   const items = await listMonorepoDir(repo.url, ref, adrDir);
   const files = items.filter((i) => i.type === 'file' && i.name.endsWith('.md'));
 
-  // Clear previously-synced ADRs (keep index.mdx).
+  // Clear previously-synced ADRs (keep the hand-written index.mdx). Both
+  // extensions: .mdx sweeps up output from before the CommonMark switch, .md is
+  // what we write now — without it a renamed or unpublished ADR would linger.
   for (const f of readdirSync(OUT_DIR)) {
-    if (f !== 'index.mdx' && f.endsWith('.mdx')) unlinkSync(join(OUT_DIR, f));
+    if (f !== 'index.mdx' && (f.endsWith('.mdx') || f.endsWith('.md'))) unlinkSync(join(OUT_DIR, f));
   }
   mkdirSync(OUT_DIR, {recursive: true});
 
@@ -65,7 +72,7 @@ async function main() {
     }
 
     const transformed = transformReadme(parsed.content, `${rawBase}/${dirname(file.path)}`, repoBase);
-    const outName = file.name.replace(/\.md$/, '.mdx');
+    const outName = file.name;
     const title = (parsed.data.title as string | undefined) ?? file.name.replace(/\.md$/, '');
     const status = (parsed.data.status as string | undefined) ?? '';
     const editUrl = `${repoBase}/edit/${ref}/${file.path}`;
